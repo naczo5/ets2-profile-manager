@@ -23,6 +23,11 @@ jobs:
           $stage = "release-stage"
           Copy-Item $src $stage -Recurse
           Get-ChildItem $stage -Recurse -Filter *.pdb | Remove-Item
+          # Framework satellite translations: our UI is English-only and WinUI falls
+          # back to English. Keep English + Polish, drop the other ~80 locales (~3 MB).
+          Get-ChildItem $stage -Directory | Where-Object {
+            $_.Name -match '^[a-z]{2}(-|$)' -and $_.Name -notin @('en', 'en-US', 'en-GB', 'pl-PL')
+          } | Remove-Item -Recurse
           Compress-Archive -Path "$stage/*" -DestinationPath "ets2-profile-manager-win-x64.zip"
       - uses: softprops/action-gh-release@v2
         with:
