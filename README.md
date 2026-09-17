@@ -1,85 +1,67 @@
-# TruckSim Profile Manager
+# ETS2 Profile Manager
 
-*TruckSim Profile Manager* is a tiny tool to manage save game profiles for *Euro Truck Simulator 2* and *American Truck Simulator*.
+Modern (WinUI 3) tool to manage save game profiles for *Euro Truck Simulator 2* and *American Truck Simulator*.
 
-It can 
+## Features
 
-- copy existing profiles to new ones, 
-- delete existing profiles,
-- backup profiles to a zip compressed file.
+### Profile management
+- List ETS2 + ATS profiles (username, game, folder ID, last access)
+- Copy profile to a new one, rename, delete (all with safety backups)
+- Backup to / restore from zip (restore validates the zip and backs up current state first)
+- Decrypt `profile.sii` for manual editing, open profile path in Explorer
+- Multi-home discovery: finds profiles under `Documents` on any drive (e.g. custom `-homedir` setups), not just `C:`
 
-I made *TruckSim Profile Manager* because I didn´t find another tool, which was able to achieve this in a easy way.
+### Settings sync (wheel painkiller)
+Game settings live per-profile, so a tuned wheel has to be reconfigured for every profile. Pick a **source** profile, **target** profiles (same game only), and **setting groups**:
 
-![](./assets/TruckSim-PM.gif)
+| File | Groups |
+| ---- | ------ |
+| `controls.sii` | Force feedback, Steering tuning, Deadzones & invert, Axes & devices ⚠, Button & key bindings ⚠, Other constants |
+| `config_local.cfg` | Shifting & transmission, Pedals & brake, Wheel range & camera |
+| `config.cfg` | Driving aids & stability |
 
-## Installation
+Live diff preview (`key: old → new` per target), explicit confirmation, auto-backup of every target before writing, atomic writes with re-validation. `controls.sii` indices are never renumbered.
 
-- Download the latest version from Github [releases](https://github.com/elpatron68/TruckSim-PM/releases). 
-- Extract the ZIP file in a directory of your choice. 
-- Start `TruckSim-PM.exe` to launch the program.
+### Save editor
+Edit money, XP, ADR classes and driver skills per save slot. Requires decryptable saves: set `uset g_save_format "2"` in `config.cfg`, load the game and save once.
 
-## Disable Steam Cloud Usage
+### Safety model (revert options)
+- Every mutation (sync, rename, save-edit, delete) takes a timestamped backup to `<gamehome>/ets2-profile-manager-backups` first (keeps last 10 per profile)
+- Sync/restore/rename/save-edit **refuse** to write if the backup failed
+- Restore validates the zip (`profile.sii` at root) and backs up current state before overwriting
+- Game-running guard on all mutating operations
 
-You must disable Steam Cloud usage for each profile. To stop using Steam Cloud: Start the game and at the profile selection screen select your profile, then edit profile and uncheck the Steam Cloud checkbox:
+## Requirements
+- Windows 10 1809+ / 11, x64
+- [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) (releases are framework-dependent)
+- Steam Cloud **disabled** per profile (profile selection → Edit profile → uncheck Steam Cloud):
 
-![](./assets/Profilesettings.png)
+![](./Profilesettings.png)
 
-## Usage
+## Install
+Download `ets2-profile-manager-win-x64.zip` from [Releases](../../releases), extract anywhere, run `ets2-profile-manager.exe`. No installer, no admin rights, no telemetry — everything runs locally.
 
-Should be self-explanatory, just right-click on a profile:
-
-### Copy Profile
-
-Asks for a new user name, decrypts `profle.sii`, replaces user name and copies the selected profile to a new one.
-
-### Delete Profile
-
-Deletes the selected profile directory.
-
-### Backup Profile
-
-Asks for a file name and archives the selected profile directory to a zip file. Restore by extracting the file to the profiles directory.
-
-### Decrypt profile.sii
-
-Decrypt the profile configuration file (for manual editing).
-
-## Privacy Statement
-
-As the author likes to know, if and how often this app is being used, a simple usage tracking was implemented. Absolutely no personal information (like directory- or user names or IP addresses) will be submitted.
-
-![image-20240415121945904](./assets/image-20240415121945904.png)
-
-Example usage tracking.
-
-## License
-
-You can do whatever you want with *TruckSim Profile Manager*.
-
+## Build from source
 ```
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-                    Version 2, December 2004
-
- Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
-
- Everyone is permitted to copy and distribute verbatim or modified
- copies of this license document, and changing it is allowed as long
- as the name is changed.
-
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-  0. You just DO WHAT THE FUCK YOU WANT TO.
+dotnet build ets2-profile-manager.sln -c Release
 ```
+Output: `ets2-profile-manager/bin/Release/net8.0-windows10.0.19041.0/win-x64/ets2-profile-manager.exe`. Needs .NET 8 SDK.
 
-## 3rd Party Licenses
+Releases are cut by pushing a tag: `git tag v1.2.0 && git push origin v1.2.0` — see `.github/workflows/release.yml`.
 
-Please respect the licenses of these 3rd party components:
+## Privacy
+No usage tracking. All operations run locally; nothing is sent anywhere.
 
-| Project Name                                                 | License                                  | Link                                                         |
-| ------------------------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------ |
-| [SII_Decrypt](https://github.com/TheLazyTomcat/SII_Decrypt)  | Mozilla Public License Version 2.0       | https://www.mozilla.org/MPL/2.0/                             |
-| [Mahapps.Metro](https://github.com/MahApps/MahApps.Metro)    | MIT License                              | https://opensource.org/license/mit                           |
-| [Material Design Icons](https://github.com/MahApps/MahApps.Metro.IconPacks) | Apache License 2.0                       | https://github.com/google/material-design-icons/blob/master/LICENSE |
-| [ntfy.Net](https://github.com/nwithan8/ntfy-dotnet)          | GNU General Public License v3.0 or later | https://licenses.nuget.org/GPL-3.0-or-later                  |
+## Credits
+- Original tool: [elpatron68/TruckSim-PM](https://github.com/elpatron68/TruckSim-PM) (WTFPL) — profile management concept and `SII_Decrypt` integration
+- [playhaux/ETS2ATS-Profile-Manager](https://github.com/playhaux/ETS2ATS-Profile-Manager) (Apache-2.0, itself a fork of the above) — save-game editor engine (money/XP/skills regex logic) and rename flow patterns, ported without its telemetry
+- Decryption engine: [SII_Decrypt](https://github.com/TheLazyTomcat/SII_Decrypt) by TheLazyTomcat (MPL-2.0, embedded binary)
+- UI: [WinUI 3 / Windows App SDK](https://github.com/microsoft/WindowsAppSDK) (MIT)
 
+## 3rd party licenses
+| Project | License |
+| ------- | ------- |
+| [SII_Decrypt](https://github.com/TheLazyTomcat/SII_Decrypt) | [MPL-2.0](https://www.mozilla.org/MPL/2.0/) |
+| [Windows App SDK](https://github.com/microsoft/WindowsAppSDK) | [MIT](https://opensource.org/license/mit) |
+
+License of this project: same as the original — do what you want (WTFPL-2.0, see original README history).

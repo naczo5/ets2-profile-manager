@@ -1,0 +1,42 @@
+<Window
+    x:Class="Ets2ProfileManager.SaveEditorWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Edit Save">
+    <ScrollViewer Padding="16">
+        <StackPanel Spacing="8">
+            <TextBlock x:Name="lblProfile" FontWeight="Bold" FontSize="16"/>
+            <TextBlock x:Name="lblDetails" Opacity="0.7"/>
+            <TextBlock Text="Save game:" FontWeight="SemiBold"/>
+            <ComboBox x:Name="cmbSaves" DisplayMemberPath="DisplayName"
+                      SelectionChanged="Saves_Changed" HorizontalAlignment="Stretch"/>
+            <TextBlock Text="Economy" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtMoney" Header="Money"/>
+            <TextBox x:Name="txtXP" Header="XP (experience points)"/>
+            <TextBlock Text="ADR classes" FontWeight="SemiBold"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <CheckBox x:Name="chkAdr1" Content="Class 1"/>
+                <CheckBox x:Name="chkAdr2" Content="Class 2"/>
+                <CheckBox x:Name="chkAdr3" Content="Class 3"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <CheckBox x:Name="chkAdr4" Content="Class 4"/>
+                <CheckBox x:Name="chkAdr5" Content="Class 5"/>
+                <CheckBox x:Name="chkAdr6" Content="Class 6"/>
+            </StackPanel>
+            <TextBlock Text="Driver skills (0–6)" FontWeight="SemiBold"/>
+            <Slider x:Name="sldLongDist" Header="Long distance" Minimum="0" Maximum="6" StepFrequency="1" TickFrequency="1"/>
+            <Slider x:Name="sldHeavyCargo" Header="Heavy cargo" Minimum="0" Maximum="6" StepFrequency="1" TickFrequency="1"/>
+            <Slider x:Name="sldFragileCargo" Header="Fragile cargo" Minimum="0" Maximum="6" StepFrequency="1" TickFrequency="1"/>
+            <Slider x:Name="sldUrgentCargo" Header="Urgent deliveries" Minimum="0" Maximum="6" StepFrequency="1" TickFrequency="1"/>
+            <Slider x:Name="sldEcoDriving" Header="Eco driving" Minimum="0" Maximum="6" StepFrequency="1" TickFrequency="1"/>
+            <TextBlock x:Name="lblStatus" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Content="Save" Click="Save_Click" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="Close" Click="Close_Click"/>
+            </StackPanel>
+            <TextBlock Text="Exit the game before saving. Requires decryptable saves (g_save_format 2)."
+                       Opacity="0.7" TextWrapping="Wrap" FontSize="12"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

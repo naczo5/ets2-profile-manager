@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local reference clones (e.g. upstream forks used for porting, not part of build)
+reference/

@@ -1,0 +1,55 @@
+<Window
+    x:Class="Ets2ProfileManager.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Ets2ProfileManager"
+    Title="ETS2 Profile Manager">
+
+    <Grid Padding="12" RowSpacing="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Profiles — right-click a row for actions"
+                       VerticalAlignment="Center" FontWeight="SemiBold"/>
+            <Button Grid.Column="1" Content="Refresh" Click="Refresh_Click"/>
+        </Grid>
+
+        <ListView Grid.Row="1" x:Name="lvProfiles">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:PlayerProfile">
+                    <StackPanel Padding="4">
+                        <StackPanel.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Copy to new profile" Click="Copy_Click"/>
+                                <MenuFlyoutItem Text="Rename" Click="Rename_Click"/>
+                                <MenuFlyoutItem Text="Edit save (money, XP, skills)" Click="EditSave_Click"/>
+                                <MenuFlyoutItem Text="Sync settings to other profiles..." Click="Sync_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Backup to zip..." Click="Backup_Click"/>
+                                <MenuFlyoutItem Text="Restore from backup..." Click="Restore_Click"/>
+                                <MenuFlyoutItem Text="Decrypt profile.sii" Click="Decrypt_Click"/>
+                                <MenuFlyoutItem Text="Open path in Explorer" Click="Explorer_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Delete" Click="Delete_Click"/>
+                            </MenuFlyout>
+                        </StackPanel.ContextFlyout>
+                        <TextBlock Text="{x:Bind Username, Mode=OneTime}" FontWeight="SemiBold" FontSize="15"/>
+                        <TextBlock FontSize="12" Opacity="0.7">
+                            <Run Text="{x:Bind EtsAts, Mode=OneTime}"/><Run Text=" • "/><Run Text="{x:Bind DirectoryShort, Mode=OneTime}"/><Run Text=" • "/><Run Text="{x:Bind LastAccess, Mode=OneTime}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock Grid.Row="2" x:Name="statusBarText" TextWrapping="Wrap" Opacity="0.8"/>
+    </Grid>
+</Window>

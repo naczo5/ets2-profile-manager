@@ -1,6 +1,6 @@
-﻿using System.IO;
+using System.IO;
 
-namespace TruckSim_PM
+namespace Ets2ProfileManager
 {
     static class StringExtensions
     {
@@ -28,7 +28,6 @@ namespace TruckSim_PM
             foreach (string hex in hexValuesSplit)
             {
                 int value = Convert.ToInt32(hex, 16);
-                string stringValue = Char.ConvertFromUtf32(value);
                 char charValue = (char)value;
                 username += charValue;
             }
@@ -46,6 +45,27 @@ namespace TruckSim_PM
                 ScSDirectoryname += hex;
             }
             return ScSDirectoryname;
+        }
+
+        public static bool IsEncodableUsername(string username, out string reason)
+        {
+            reason = string.Empty;
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                reason = "Name must not be empty.";
+                return false;
+            }
+            if (username.Any(c => char.IsControl(c) || c > 0xFF))
+            {
+                reason = "Name contains characters the game cannot store in profile folder IDs.";
+                return false;
+            }
+            if (username.ScsUsernameToDirectory().Length % 2 != 0)
+            {
+                reason = "Name encodes to an invalid folder ID. Try a different name.";
+                return false;
+            }
+            return true;
         }
 
         public static bool IsHex(this IEnumerable<char> chars)

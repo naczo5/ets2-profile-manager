@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet build ets2-profile-manager.sln -c Release --nologo
+      - name: Zip build output
+        shell: pwsh
+        run: |
+          $src = "ets2-profile-manager/bin/Release/net8.0-windows10.0.19041.0/win-x64"
+          Compress-Archive -Path "$src/*" -DestinationPath "ets2-profile-manager-win-x64.zip"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ets2-profile-manager-win-x64.zip
+          generate_release_notes: true
