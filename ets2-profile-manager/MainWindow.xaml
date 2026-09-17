@@ -43,7 +43,7 @@
                         </StackPanel.ContextFlyout>
                         <TextBlock Text="{x:Bind Username, Mode=OneTime}" FontWeight="SemiBold" FontSize="15"/>
                         <TextBlock FontSize="12" Opacity="0.7">
-                            <Run Text="{x:Bind EtsAts, Mode=OneTime}"/><Run Text=" • "/><Run Text="{x:Bind DirectoryShort, Mode=OneTime}"/><Run Text=" • "/><Run Text="{x:Bind LastAccess, Mode=OneTime}"/>
+                            <Run Text="{x:Bind EtsAts, Mode=OneTime}"/><Run Text=" • "/><Run Text="{x:Bind CloudTag, Mode=OneTime}"/><Run Text="{x:Bind DirectoryShort, Mode=OneTime}"/><Run Text=" • "/><Run Text="{x:Bind LastAccess, Mode=OneTime}"/>
                         </TextBlock>
                     </StackPanel>
                 </DataTemplate>

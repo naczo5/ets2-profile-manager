@@ -59,9 +59,27 @@ namespace Ets2ProfileManager
 
         private static bool GameRunning() => GameGuard.IsRunning();
 
+        /// <summary>Cloud profiles support sync-target, backup and explore only.</summary>
+        private async Task<bool> RejectCloudAsync(PlayerProfile profile, string action)
+        {
+            if (!profile.IsCloud)
+            {
+                return false;
+            }
+            await Dialogs.MessageAsync(this, "Cloud profile",
+                $"{action} is not supported for Steam Cloud profiles (Steam owns those files and would fight the change). " +
+                "You can sync settings TO a Cloud profile, back it up, or open it in Explorer.");
+            statusBarText.Text = $"{action} not supported for Cloud profiles.";
+            return true;
+        }
+
         private async void Copy_Click(object sender, RoutedEventArgs e)
         {
             if (ItemOf(sender) is not PlayerProfile toCopy)
+            {
+                return;
+            }
+            if (await RejectCloudAsync(toCopy, "Copy"))
             {
                 return;
             }
@@ -102,6 +120,10 @@ namespace Ets2ProfileManager
         private async void Rename_Click(object sender, RoutedEventArgs e)
         {
             if (ItemOf(sender) is not PlayerProfile toRename)
+            {
+                return;
+            }
+            if (await RejectCloudAsync(toRename, "Rename"))
             {
                 return;
             }
@@ -149,6 +171,10 @@ namespace Ets2ProfileManager
         private async void EditSave_Click(object sender, RoutedEventArgs e)
         {
             if (ItemOf(sender) is not PlayerProfile profile)
+            {
+                return;
+            }
+            if (await RejectCloudAsync(profile, "Save editing"))
             {
                 return;
             }
@@ -211,6 +237,10 @@ namespace Ets2ProfileManager
             {
                 return;
             }
+            if (await RejectCloudAsync(profile, "Restore"))
+            {
+                return;
+            }
             if (GameRunning())
             {
                 await Dialogs.MessageAsync(this, "Game is running", "You should end the game before restoring a backup.");
@@ -241,6 +271,10 @@ namespace Ets2ProfileManager
         private async void Decrypt_Click(object sender, RoutedEventArgs e)
         {
             if (ItemOf(sender) is not PlayerProfile profile)
+            {
+                return;
+            }
+            if (await RejectCloudAsync(profile, "Decrypt"))
             {
                 return;
             }
@@ -277,6 +311,10 @@ namespace Ets2ProfileManager
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
             if (ItemOf(sender) is not PlayerProfile toDelete)
+            {
+                return;
+            }
+            if (await RejectCloudAsync(toDelete, "Delete"))
             {
                 return;
             }

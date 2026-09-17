@@ -52,6 +52,10 @@ namespace Ets2ProfileManager
             set => _lastaccess = value;
         }
 
+        public bool IsCloud { get; set; }
+
+        public string CloudTag => IsCloud ? "Cloud • " : string.Empty;
+
         public static List<PlayerProfile> GetEtsProfiles(string game="ets")
         {
             List<PlayerProfile> pf = new();
@@ -125,14 +129,16 @@ namespace Ets2ProfileManager
             foreach (string home in GetGameHomeDirectories(game))
             {
                 yield return Path.Combine(home, "profiles");
+                // Steam Cloud profiles: same file formats, no profile.sii/save locally.
+                yield return Path.Combine(home, "steam_profiles");
             }
         }
 
         public static string GetGameHomeDirectory(string game, string profileDirectory)
         {
-            // profileDirectory is <home>\profiles\<hex>; walk back up.
-            string? profiles = Path.GetDirectoryName(profileDirectory);
-            string? home = profiles != null ? Path.GetDirectoryName(profiles) : null;
+            // profileDirectory is <home>\profiles\<hex> or <home>\steam_profiles\<hex>; walk back up.
+            string? container = Path.GetDirectoryName(profileDirectory);
+            string? home = container != null ? Path.GetDirectoryName(container) : null;
             if (home != null && System.IO.Directory.Exists(home))
             {
                 return home;
@@ -152,6 +158,8 @@ namespace Ets2ProfileManager
 
         private static void AddProfilesFromDirectory(List<PlayerProfile> pf, string profiledirectory, string game)
         {
+            bool isCloud = Path.GetFileName(profiledirectory.TrimEnd(Path.DirectorySeparatorChar))
+                .Equals("steam_profiles", StringComparison.OrdinalIgnoreCase);
             string[] profilesubdirectories;
             try
             {
@@ -169,7 +177,11 @@ namespace Ets2ProfileManager
                     {
                         DirectoryInfo di = new(subdirectory);
                         string shortdir = di.Name;
-                        if (shortdir.Length > 0 && shortdir.Length % 2 == 0 && shortdir.IsHex() && File.Exists(Path.Combine(subdirectory, "profile.sii")))
+                        // Local profiles carry profile.sii; cloud ones only settings (controls.sii).
+                        bool hasIdentity = isCloud
+                            ? File.Exists(Path.Combine(subdirectory, "controls.sii"))
+                            : File.Exists(Path.Combine(subdirectory, "profile.sii"));
+                        if (shortdir.Length > 0 && shortdir.Length % 2 == 0 && shortdir.IsHex() && hasIdentity)
                         {
                             if (pf.Any(p => string.Equals(p.Directory, subdirectory, StringComparison.OrdinalIgnoreCase)))
                             {
@@ -179,10 +191,11 @@ namespace Ets2ProfileManager
                             {
                                 Directory = subdirectory,
                                 DirectoryShort = shortdir,
-                                Decrypted = IsDecrypted(Path.Combine(subdirectory, "profile.sii")),
+                                Decrypted = isCloud || IsDecrypted(Path.Combine(subdirectory, "profile.sii")),
                                 EtsAts = game.ToUpper(),
                                 Username = subdirectory.DirectoryToScsUsername(),
                                 LastAccess = di.LastWriteTime.ToString(),
+                                IsCloud = isCloud,
                             };
                             pf.Add(p);
                         }

@@ -51,7 +51,7 @@ namespace Ets2ProfileManager
                 p.EtsAts == Source.EtsAts &&
                 !string.Equals(p.Directory, Source.Directory, StringComparison.OrdinalIgnoreCase)))
             {
-                var cb = new CheckBox { Tag = p, Content = $"{p.Username}  [{p.DirectoryShort}]" };
+                var cb = new CheckBox { Tag = p, Content = $"{p.Username}  [{p.DirectoryShort}]" + (p.IsCloud ? "  (Cloud — Steam may overwrite on next sync)" : string.Empty) };
                 _targetBoxes.Add(cb);
                 pnlTargets.Children.Add(cb);
             }
@@ -146,8 +146,11 @@ namespace Ets2ProfileManager
             }
             string groupNames = string.Join(", ", SettingsSync.Groups.Where(g => groups.Contains(g.Id)).Select(g => g.Title));
             string targetNames = string.Join("\n", targets.Select(t => $"• {t.Username} [{t.DirectoryShort}] ({t.EtsAts})"));
+            string cloudNote = targets.Any(t => t.IsCloud)
+                ? "\n\nWARNING: Cloud targets can be overwritten by Steam on next launch. Exit the game, sync, then launch the game once and check the settings stuck."
+                : string.Empty;
             if (!await Dialogs.ConfirmAsync(this, "Confirm sync",
-                $"Copy from '{Source.Username}' [{Source.DirectoryShort}] to:\n{targetNames}\n\nGroups: {groupNames}\n\nEach target is backed up first. Continue?"))
+                $"Copy from '{Source.Username}' [{Source.DirectoryShort}] to:\n{targetNames}\n\nGroups: {groupNames}\n\nEach target is backed up first.{cloudNote} Continue?"))
             {
                 lblStatus.Text = "Sync canceled.";
                 return;
