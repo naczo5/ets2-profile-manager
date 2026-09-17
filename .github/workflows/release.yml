@@ -20,7 +20,10 @@ jobs:
         shell: pwsh
         run: |
           $src = "ets2-profile-manager/bin/Release/net8.0-windows10.0.19041.0/win-x64"
-          Compress-Archive -Path "$src/*" -DestinationPath "ets2-profile-manager-win-x64.zip"
+          $stage = "release-stage"
+          Copy-Item $src $stage -Recurse
+          Get-ChildItem $stage -Recurse -Filter *.pdb | Remove-Item
+          Compress-Archive -Path "$stage/*" -DestinationPath "ets2-profile-manager-win-x64.zip"
       - uses: softprops/action-gh-release@v2
         with:
           files: ets2-profile-manager-win-x64.zip
