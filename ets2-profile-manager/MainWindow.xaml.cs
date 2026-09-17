@@ -174,8 +174,15 @@ namespace Ets2ProfileManager
             {
                 return;
             }
-            if (await RejectCloudAsync(profile, "Save editing"))
+            if (profile.IsCloud)
             {
+                await Dialogs.MessageAsync(this, "Cloud profile — saves live on Steam",
+                    "Money/XP editing needs local save files, but Steam Cloud profiles keep saves on Valve's servers " +
+                    "— this folder has no save/ directory, so there is nothing to edit.\n\nWorkaround:\n" +
+                    "1. In-game profile manager → Edit profile → uncheck Steam Cloud.\n" +
+                    "2. The profile appears here as a local profile — edit it freely.\n" +
+                    "3. Re-enable Cloud afterwards if you want; Steam will upload the edited saves on next launch.");
+                statusBarText.Text = "Save editing needs a local profile (see steps).";
                 return;
             }
             // Browsing saves decrypts game.sii/info.sii in place, so the

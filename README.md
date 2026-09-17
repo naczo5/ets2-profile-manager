@@ -25,6 +25,9 @@ Live diff preview (`key: old → new` per target), explicit confirmation, auto-b
 ### Save editor
 Edit money, XP, ADR classes and driver skills per save slot. Requires decryptable saves: set `uset g_save_format "2"` in `config.cfg`, load the game and save once.
 
+### Steam Cloud profiles
+Cloud profiles (`steam_profiles/`) appear tagged and can be **sync targets** for settings, backed up, and opened in Explorer. Copy/rename/delete/save-edit/restore refuse them — Steam owns those files. Save editing is additionally impossible: Cloud saves live server-side, so there is no local `game.sii`; uncheck Steam Cloud in-game to materialize the profile locally, then edit it here.
+
 ### Safety model (revert options)
 - Every mutation (sync, rename, save-edit, delete) takes a timestamped backup to `<gamehome>/ets2-profile-manager-backups` first (keeps last 10 per profile)
 - Sync/restore/rename/save-edit **refuse** to write if the backup failed
