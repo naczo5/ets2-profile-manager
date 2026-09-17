@@ -17,7 +17,7 @@ namespace Ets2ProfileManager
         {
             _profiles = profiles;
             InitializeComponent();
-            AppWindow.Resize(new SizeInt32(660, 700));
+            AppWindow.Resize(new SizeInt32(760, 920));
             cmbSource.ItemsSource = profiles;
             cmbSource.SelectedItem = preselect != null && profiles.Contains(preselect)
                 ? preselect
@@ -46,7 +46,14 @@ namespace Ets2ProfileManager
             {
                 return;
             }
-            lblSourceInfo.Text = $"{Source.EtsAts} — Folder ID: {Source.DirectoryShort}";
+            lblSourceInfo.Text = $"{Source.EtsAts} — Folder ID: {Source.DirectoryShort}" + (Source.IsCloud ? " — Cloud profile" : string.Empty);
+            ControlsDoc srcCtl = SettingsSync.LoadControls(Source.Directory);
+            CfgDoc srcLocal = SettingsSync.LoadCfg(Source.Directory, SettingsSync.LocalCfgFile);
+            CfgDoc srcCfg = SettingsSync.LoadCfg(Source.Directory, SettingsSync.ConfigFile);
+            lblSourceFiles.Text = "Source files: " +
+                $"controls.sii {(srcCtl.Valid ? $"✓ ({srcCtl.Entries.Count} entries)" : "✗ MISSING — wheel/binding groups will skip")}, " +
+                $"config_local.cfg {(srcLocal.Loaded ? $"✓ ({srcLocal.ByKey.Count} keys)" : "✗ MISSING")}, " +
+                $"config.cfg {(srcCfg.Loaded ? $"✓ ({srcCfg.ByKey.Count} keys)" : "✗ MISSING")}";
             foreach (PlayerProfile p in _profiles.Where(p =>
                 p.EtsAts == Source.EtsAts &&
                 !string.Equals(p.Directory, Source.Directory, StringComparison.OrdinalIgnoreCase)))
@@ -100,7 +107,19 @@ namespace Ets2ProfileManager
                 CfgDoc tgtLocal = SettingsSync.LoadCfg(t.Directory, SettingsSync.LocalCfgFile);
                 CfgDoc tgtCfg = SettingsSync.LoadCfg(t.Directory, SettingsSync.ConfigFile);
                 var diffs = SettingsSync.ComputeDiff(srcCtl, srcLocal, srcCfg, tgtCtl, tgtLocal, tgtCfg, groups);
-                sb.AppendLine($"=== {t.Username} [{t.DirectoryShort}] — {diffs.Count} change(s) ===");
+                sb.AppendLine($"=== {t.Username} [{t.DirectoryShort}]{(t.IsCloud ? " (Cloud)" : string.Empty)} — {diffs.Count} change(s) ===");
+                if (!tgtCtl.Valid && groups.Any(id => SettingsSync.Groups.Any(g => g.Id == id && g.File == SettingsSync.ControlsFile)))
+                {
+                    sb.AppendLine($"NOTE: target has no valid {SettingsSync.ControlsFile} — wheel/binding groups will skip.");
+                }
+                if (!tgtLocal.Loaded && groups.Any(id => SettingsSync.Groups.Any(g => g.Id == id && g.File == SettingsSync.LocalCfgFile)))
+                {
+                    sb.AppendLine($"NOTE: target has no {SettingsSync.LocalCfgFile} — shifting/pedals/wheel-range groups will skip.");
+                }
+                if (!tgtCfg.Loaded && groups.Any(id => SettingsSync.Groups.Any(g => g.Id == id && g.File == SettingsSync.ConfigFile)))
+                {
+                    sb.AppendLine($"NOTE: target has no {SettingsSync.ConfigFile} — aids/gameplay/units/camera/HUD groups will skip.");
+                }
                 foreach (SettingDiff d in diffs)
                 {
                     if (total >= cap)

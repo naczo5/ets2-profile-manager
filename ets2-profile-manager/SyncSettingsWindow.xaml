@@ -17,18 +17,19 @@
             <ComboBox x:Name="cmbSource" DisplayMemberPath="Username"
                       SelectionChanged="Source_Changed" HorizontalAlignment="Stretch"/>
             <TextBlock x:Name="lblSourceInfo" Opacity="0.7"/>
+            <TextBlock x:Name="lblSourceFiles" Opacity="0.7" FontFamily="Consolas" FontSize="12"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Spacing="4">
             <TextBlock Text="Target profiles (same game only):" FontWeight="SemiBold"/>
-            <ScrollViewer MaxHeight="110">
+            <ScrollViewer MaxHeight="140">
                 <StackPanel x:Name="pnlTargets"/>
             </ScrollViewer>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Spacing="4">
             <TextBlock Text="Setting groups to sync:" FontWeight="SemiBold"/>
-            <ScrollViewer MaxHeight="150">
+            <ScrollViewer MaxHeight="330">
                 <StackPanel x:Name="pnlGroups"/>
             </ScrollViewer>
             <TextBlock Text="Each target is auto-backed up to ets2-profile-manager-backups before writing. Writes are atomic and re-validated."
