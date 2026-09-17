@@ -113,6 +113,40 @@ namespace Ets2ProfileManager
                     or "g_lane_assistant" or "g_cruise_control_smart" or "g_cruise_control_grid"
                     or "g_transmission_crawl_ignore" or "g_hill_brake_assist"
                     or "g_engine_start_auto" or "g_axle_drop_auto"),
+            new("gameplay", ConfigFile, "Gameplay & simulation",
+                "Fuel/hardcore sim, parking difficulty, coupling, cargo rules, economy, physics feel",
+                null, null,
+                k => k is "g_fuel_simulation" or "g_hardcore_simulation"
+                    or "g_parking_difficulty" or "g_simple_parking_doubles"
+                    or "g_trailer_advanced_coupling"
+                    or "g_cargo_load_require_park_brake" or "g_cargo_load_require_engine_off"
+                    or "g_relocate_truck_and_driver_tog"
+                    or "g_speed_warning" or "g_use_speed_limiter"
+                    or "g_road_events" or "g_detours" or "g_bad_weather_factor"
+                    or "g_income_factor" or "g_currency"
+                    or "g_start_in_truck" or "g_park_brake_init"
+                    or "g_adaptive_shift" or "g_auto_diff_lock"
+                    or "g_automatic_high_beams" or "g_automatic_headlights"
+                    or "g_throttle_double_tap" or "g_acc"
+                    or "g_suspension_stiffness" or "g_cabin_suspension_stiffness" or "g_driveshaft_torque"),
+            new("units", ConfigFile, "Units",
+                "mph, Fahrenheit, psi, pounds, gallons, mpg",
+                null, null,
+                k => k is "g_mph" or "g_fahrenheit" or "g_psi" or "g_pounds" or "g_gallon" or "g_mpg"),
+            new("camera", ConfigFile, "Camera",
+                "Cabin physics, horizon lock, FOV speed, blinker cam, blind spot, mirror physics",
+                null, null,
+                k => k is "g_cam_physics" or "g_cam_physics_value" or "g_camera_horizon_lock"
+                    or "g_cam_fov_speed" or "g_cam_blinker" or "g_blind_spot" or "g_phys_mirrors"),
+            new("hud", ConfigFile, "HUD & navigation",
+                "Speed warnings, map/GPS, voice nav, job list, markers",
+                null, null,
+                k => k is "g_hud_speed_warning" or "g_hud_speed_limit"
+                    or "g_show_game_elements" or "g_show_game_blockers"
+                    or "g_mp_name_tags" or "g_disable_beacons"
+                    or "g_ui_map_align" or "g_gps_routing_mode" or "g_gps_navigation"
+                    or "g_voice_navigation" or "g_voice_navigation_pack"
+                    or "g_job_distance" or "g_job_distance_limit" or "g_world_map_zoom"),
         };
 
         private static readonly Regex ConfigLineRe = new(
